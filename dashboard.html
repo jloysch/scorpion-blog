@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<html>
+<body>
+	<h1>Your Dashboard</h1>
+	<br/>
+	<p>Name: {{current_user.name}}</p>
+	<p>Email: {{current_user.email}}</p>
+	<p>Username: {{current_user.username}}</p>
+	<br/>
+	<br/>
+	<p><a href = {{url_for('updateinfo', id = current_user.id)}}>Update Information</a></p>
+</body>
+</html>

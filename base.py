@@ -26,7 +26,6 @@ class Users(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key = True)
 	username = db.Column(db.String(18), nullable = False, unique = True)
 	name = db.Column(db.String(80), nullable = False)
-	#password = db.Column(db.String(30), nullable = False)
 	email = db.Column(db.String(80), nullable = False, unique = True)
 	dateOfRegistration = db.Column(db.DateTime, default = datetime.utcnow)
 	passwordHash = db.Column(db.String(128))
@@ -58,6 +57,14 @@ class LoginForm(FlaskForm):
 	email = StringField("Email Address", validators=[DataRequired(), Email()])
 	password = PasswordField("Password", validators=[DataRequired()])
 	submit = SubmitField("Log In")
+
+class UpdateForm(FlaskForm):
+	email = StringField("Email Address", validators=[DataRequired(), Email()])
+	name = StringField("Name", validators=[DataRequired()])
+	username = StringField("Username", validators=[DataRequired()])
+	passwordHash = PasswordField("Password", validators=[DataRequired(), EqualTo('passwordHashConfirm')])
+	passwordHashConfirm = PasswordField("Re-enter your Password", validators=[DataRequired()])
+	submit = SubmitField("Update")
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -96,7 +103,7 @@ def login():
 		if user:
 			if check_password_hash(user.passwordHash, form.password.data):
 				login_user(user)
-				return redirect(url_for('redirecttest'))
+				return redirect(url_for('dashboard'))
 			else:
 				flash("Wrong Password")
 		else:
@@ -108,3 +115,25 @@ def login():
 @app.route('/redirecttest')
 def redirecttest():
 	return render_template("redirecttest.html")
+
+@app.route('/dashboard', methods = ['GET', 'POST'])
+@login_required
+def dashboard():
+	return render_template("dashboard.html")
+
+@app.route('/updateinfo/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def updateinfo(id):
+	form = UpdateForm()
+	user = Users.query.get_or_404(id)
+	if form.validate_on_submit():
+		user.name = request.form['name']
+		user.email = request.form['email']
+		user.username = request.form['username']
+		user.passwordHash = generate_password_hash(request.form['passwordHash'], "sha256")
+		db.session.commit()
+		flash("User Updated Successfully")
+		return render_template("updateinfo.html", form = form, user = user)
+	else:
+		flash("Invalid Form. Please Try Again.")
+	return render_template("updateinfo.html", form = form, user = user)
