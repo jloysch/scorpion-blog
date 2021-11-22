@@ -1,0 +1,108 @@
+body{
+  background-color: lightgray;
+}
+
+h1{
+  font-size: 30pt;
+  font-family: Georgia;
+  text-align: center;
+  background-color: lightgray;
+  margin-bottom: -40px;
+}
+
+h2{
+  font-size:  24pt;
+  color: black;
+  font-family: Georgia;
+  text-align: left;
+  padding: 20px;
+}
+
+h3{
+  padding-top: 20px;
+  font-size: 18pt;
+  font-family: Georgia;
+  font-style: italic;
+  color: red;
+  text-align: center;
+}
+
+h4{
+  font-size: 20pt;
+  font-family: Georgia;
+  text-align: left;
+  background-color: lightgray;
+}
+
+p{
+  font-size: 18px;
+  padding: 20px;
+  line-height: 30px;
+}
+
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 32.13%;
+  padding: 10px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.column2 {
+  float: left;
+  width: 48.77%;
+  padding: 10px;
+}
+
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}
+
+/*navbar crap*/
+.navbar {
+  width: 100%;
+  background-color: black;
+  overflow: auto;
+}
+
+.navbar a {
+  float: left;
+  color: white;
+  padding:  12px;
+  text-decoration: none;
+  font-size: 17px;
+  width: 11.058%;
+  text-align: center;
+}
+
+.navbar a:hover {
+  background-color: red;
+}
+
+.navbar a:screen {
+  background-color: red;
+}
+
+.navbar.activated {
+   background: yellow;
+}
+
+@media screen and (max-width: 500px) {
+  .navbar a {
+    float: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+}
