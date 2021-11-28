@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+
+<html>
+<body>
+	<h1>Publish a Blog Post</h1>
+	<br/>
+	<form method="POST">
+		{{form.hidden_tag()}}
+
+		{{form.postTitle.label}}
+		{{form.postTitle()}}
+		<br/>
+		{{form.name.label}}
+		{{form.name()}}
+		<br/>
+		{{form.article.label}}
+		{{form.article()}}
+		<br/>
+		<br/>
+		{{form.submit}}
+	</form>
+</body>
+</html>

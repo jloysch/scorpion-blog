@@ -7,6 +7,7 @@ from wtforms.fields.html5 import DateField
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from wtforms.widgets import TextArea
 
 app = Flask(__name__ , template_folder="Templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -65,6 +66,19 @@ class UpdateForm(FlaskForm):
 	passwordHash = PasswordField("Password", validators=[DataRequired(), EqualTo('passwordHashConfirm')])
 	passwordHashConfirm = PasswordField("Re-enter your Password", validators=[DataRequired()])
 	submit = SubmitField("Update")
+
+class BlogPost(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	postTitle = db.Column(db.String(300))
+	article = db.Column(db.Text)
+	name = db.Column(db.String(80))
+	date = db.Column(db.DateTime, default = datetime.utcnow)
+
+class BlogPostForm(FlaskForm):
+	postTitle = StringField("Title", validators = [DataRequired()])
+	name = StringField("Name", validators = [DataRequired()])
+	article = StringField("Body", validators = [DataRequired()], widget = TextArea())
+	submit = SubmitField("Publish Post")
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -137,3 +151,23 @@ def updateinfo(id):
 	else:
 		flash("Invalid Form. Please Try Again.")
 	return render_template("updateinfo.html", form = form, user = user)
+
+@app.route('/publish', methods = ['GET', 'POST'])
+@login_required
+def publish():
+	form = BlogPostForm()
+	if form.validate_on_submit():
+		blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
+		
+		form.postTitle.data = ''
+		form.name.data = ''
+		form.article.data = ''
+
+		db.session.add(blogPost)
+		db.session.commit()
+		flash("Your Post was Successfully Published")
+
+	else:
+		flash("Post not published, please try fill in all information.")
+
+	return render_template("createpostform.html", form = form)
