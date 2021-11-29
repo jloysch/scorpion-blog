@@ -171,3 +171,9 @@ def publish():
 		flash("Post not published, please try fill in all information.")
 
 	return render_template("createpostform.html", form = form)
+
+@app.route('/allposts')
+def allposts():
+	allPosts = BlogPost.query.order_by(BlogPost.date)
+
+	return render_template("allposts.html", allPosts = allPosts)

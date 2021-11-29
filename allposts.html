@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+
+<html>
+<body>
+	<h1>All Posts</h1>
+	<br/>
+	
+	{% for blogPost in allPosts %}
+		
+		</h2>{{blogPost.title}}</h2>
+		<br/>
+		{{blogPost.date}}
+		<br/>
+		{{blogPost.name}}
+		<br/>
+		{{blogPost.article}}
+		<br/>
+		<br/>
+
+	{% endfor %}
+
+</body>
+</html>
