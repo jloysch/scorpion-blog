@@ -7,7 +7,7 @@
 	
 	{% for blogPost in allPosts %}
 		
-		</h2>{{blogPost.title}}</h2>
+		<h2><a href="{{ url_for('userpost', id = blogPost.id) }}">{{blogPost.postTitle}}</a></h2>
 		<br/>
 		{{blogPost.date}}
 		<br/>

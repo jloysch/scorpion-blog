@@ -63,8 +63,6 @@ class UpdateForm(FlaskForm):
 	email = StringField("Email Address", validators=[DataRequired(), Email()])
 	name = StringField("Name", validators=[DataRequired()])
 	username = StringField("Username", validators=[DataRequired()])
-	passwordHash = PasswordField("Password", validators=[DataRequired(), EqualTo('passwordHashConfirm')])
-	passwordHashConfirm = PasswordField("Re-enter your Password", validators=[DataRequired()])
 	submit = SubmitField("Update")
 
 class BlogPost(db.Model):
@@ -93,6 +91,7 @@ def signup():
 			user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
 			db.session.add(user)
 			db.session.commit()
+			return redirect(url_for('login'))
 		else:
 			flash("There is already a user with this email. Try again.")
 		name = form.name.data
@@ -126,9 +125,6 @@ def login():
 		flash("Invalid information. Please try again.")
 	return render_template("login.html", form = form)
 
-@app.route('/redirecttest')
-def redirecttest():
-	return render_template("redirecttest.html")
 
 @app.route('/dashboard', methods = ['GET', 'POST'])
 @login_required
@@ -144,7 +140,6 @@ def updateinfo(id):
 		user.name = request.form['name']
 		user.email = request.form['email']
 		user.username = request.form['username']
-		user.passwordHash = generate_password_hash(request.form['passwordHash'], "sha256")
 		db.session.commit()
 		flash("User Updated Successfully")
 		return render_template("updateinfo.html", form = form, user = user)
@@ -166,6 +161,7 @@ def publish():
 		db.session.add(blogPost)
 		db.session.commit()
 		flash("Your Post was Successfully Published")
+		return redirect(url_for('allposts'))
 
 	else:
 		flash("Post not published, please try fill in all information.")
@@ -177,3 +173,17 @@ def allposts():
 	allPosts = BlogPost.query.order_by(BlogPost.date)
 
 	return render_template("allposts.html", allPosts = allPosts)
+
+@app.route('/userpost/<int:id>')
+def userpost(id):
+	blogPost = BlogPost.query.get_or_404(id)
+	return render_template('userpost.html', blogPost = blogPost)
+
+#Error Handlers
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error404.html'), 404
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('error500.html'), 500
