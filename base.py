@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 
+
 app = Flask(__name__ , template_folder="Templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = "please feed us Sarah Mangelsdorf"
@@ -42,7 +43,6 @@ class Users(db.Model, UserMixin):
 	def verify_password(self, password):
 		return check_password_hash(self.passwordHash, password)
 
-	#idk if I need this yet? but putting it here to not get errors possibly
 	def __repr__(self):
 		return '<Name %r>' % self.name
 
@@ -77,6 +77,20 @@ class BlogPostForm(FlaskForm):
 	name = StringField("Name", validators = [DataRequired()])
 	article = StringField("Body", validators = [DataRequired()], widget = TextArea())
 	submit = SubmitField("Publish Post")
+
+class EmailList(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	fname = db.Column(db.String(80))
+	lname = db.Column(db.String(80))
+	email = db.Column(db.String(80))
+
+class EmailListForm(FlaskForm):
+	fname = StringField("First Name", validators=[DataRequired()])
+	lname = StringField("Last Name", validators=[DataRequired()])
+	email = StringField("Email Address", validators=[DataRequired(), Email()])
+	submit = SubmitField("Subscribe")
+	
+
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -178,6 +192,29 @@ def allposts():
 def userpost(id):
 	blogPost = BlogPost.query.get_or_404(id)
 	return render_template('userpost.html', blogPost = blogPost)
+
+@app.route('/aboutus')
+def aboutus():
+	return render_template('aboutus.html')
+
+@app.route('/subscribe', methods = ['GET', 'POST'])
+def subscribe():
+	form = EmailListForm()
+	if form.validate_on_submit():
+		recipient = EmailList(fname = form.fname.data, lname = form.lname.data, email = form.email.data)
+
+		form.fname.data = ''
+		form.lname.data = ''
+		form.email.data = ''
+
+		db.session.add(recipient)
+		db.session.commit()
+		flash("Successfully Subscribed to Email List")
+
+	else:
+		flash("Information Invalid")
+
+	return render_template('subscribe.html', form = form)
 
 #Error Handlers
 @app.errorhandler(404)
