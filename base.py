@@ -120,24 +120,31 @@ def signup():
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
 
+	error = None
 	form = LoginForm()
 
-	if form.validate_on_submit():
+	flash("HEHE")
+	
+	if request.method == 'POST':
 
-		#returns the first result of a user with the email entered (should be only one instance though), if user doesn't exist then returns nothing'
-		user = Users.query.filter_by(email = form.email.data).first()
+		if form.validate_on_submit():
 
-		if user:
-			if check_password_hash(user.passwordHash, form.password.data):
-				login_user(user)
-				return redirect(url_for('dashboard'))
+			#returns the first result of a user with the email entered (should be only one instance though), if user doesn't exist then returns nothing'
+			user = Users.query.filter_by(email = form.email.data).first()
+
+			if user:
+				if check_password_hash(user.passwordHash, form.password.data):
+					login_user(user)
+					return redirect(url_for('dashboard'))
+				else:
+					flash("Wrong Password")
 			else:
-				flash("Wrong Password")
+				flash("Email not linked to an account")
 		else:
-			flash("Email not linked to an account")
-	else:
-		flash("Invalid information. Please try again.")
+			flash("Invalid information. Please try again.")
+
 	return render_template("login.html", form = form)
+
 
 
 @app.route('/dashboard', methods = ['GET', 'POST'])

@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/School/Desktop/scorpion-blog-main-alt/ENVIRONMENT"
+VIRTUAL_ENV="/Users/School/Documents/GitHub/scorpion-blog/ENVIRONMENT"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
