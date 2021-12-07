@@ -8,11 +8,14 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
-
+from flask_recaptcha import ReCaptcha
 
 app = Flask(__name__ , template_folder="Templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = "please feed us Sarah Mangelsdorf"
+app.config['RECAPTCHA_SITE_KEY'] = '6Le6an4dAAAAAGq2i0cGerF9vhPuH90KAUauDAc0'
+app.config['RECAPTCHA_SECRET_KEY'] = '6Le6an4dAAAAAPshXg_PB29nH3EmWg3sYoGN-zrj'
+recaptcha = ReCaptcha(app)
 db = SQLAlchemy(app)
 
 loginManager = LoginManager()
@@ -97,23 +100,28 @@ def signup():
 	name = None
 	form = SignUpForm()
 	if form.validate_on_submit():
-		#checks to make sure the user's email is not in the database, should return None if the email is unique
-		user = Users.query.filter_by(email = form.email.data).first()
-		if user is None: 
-			#line below is hashing the password with sha256 and returning the hash to the database
-			hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
-			user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
-			db.session.add(user)
-			db.session.commit()
-			return redirect(url_for('login'))
+		if recaptcha.verify():
+			#checks to make sure the user's email is not in the database, should return None if the email is unique
+			user = Users.query.filter_by(email = form.email.data).first()
+			if user is None: 
+				#line below is hashing the password with sha256 and returning the hash to the database
+				hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
+				user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
+				db.session.add(user)
+				db.session.commit()
+				flash("Sign-Up Successful. Go to the Login In page to acces your account.")
+				return redirect(url_for('login'))
+			else:
+				flash("There is already a user with this email. Try again.")
+
+			name = form.name.data
+			form.name.data = ''
+			form.passwordHash.data = ''
+			form.email.data = ''
+			form.username.data = ''
 		else:
-			flash("There is already a user with this email. Try again.")
-		name = form.name.data
-		form.name.data = ''
-		form.passwordHash.data = ''
-		form.email.data = ''
-		form.username.data = ''
-		flash("Sign-Up Successful. Go to the Login In page to acces your account.")
+			flash("Please fill out the captcha and try again.")
+			
 	allUsers = Users.query.order_by(Users.dateOfRegistration)
 	return render_template("signup.html", name = name, form = form, allUsers = allUsers)
 
@@ -166,16 +174,20 @@ def updateinfo(id):
 def publish():
 	form = BlogPostForm()
 	if form.validate_on_submit():
-		blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
+		if recaptcha.verify():
+			blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
 		
-		form.postTitle.data = ''
-		form.name.data = ''
-		form.article.data = ''
+			form.postTitle.data = ''
+			form.name.data = ''
+			form.article.data = ''
 
-		db.session.add(blogPost)
-		db.session.commit()
-		flash("Your Post was Successfully Published")
-		return redirect(url_for('allposts'))
+			db.session.add(blogPost)
+			db.session.commit()
+			flash("Your Post was Successfully Published")
+			return redirect(url_for('allposts'))
+
+		else:
+			flash("Please fill out the captcha.")
 
 	else:
 		flash("Post not published, please try fill in all information.")
