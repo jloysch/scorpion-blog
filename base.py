@@ -1,3 +1,4 @@
+
 from flask import Flask , render_template , json, redirect, url_for, request, flash
 from flask_wtf import FlaskForm
 from datetime import datetime
@@ -9,8 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 
-
-app = Flask(__name__ , template_folder="Templates")
+app = Flask(__name__ , template_folder="templates", static_folder='res')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = "please feed us Sarah Mangelsdorf"
 db = SQLAlchemy(app)
@@ -99,7 +99,7 @@ def signup():
 	if form.validate_on_submit():
 		#checks to make sure the user's email is not in the database, should return None if the email is unique
 		user = Users.query.filter_by(email = form.email.data).first()
-		if user is None: 
+		if user is None: #if unique
 			#line below is hashing the password with sha256 and returning the hash to the database
 			hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
 			user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
@@ -215,6 +215,35 @@ def subscribe():
 		flash("Information Invalid")
 
 	return render_template('subscribe.html', form = form)
+
+@app.route('/', methods = ['GET', 'POST'])
+def generateLandingPage():
+    return render_template("home.html")
+    
+@app.route('/giles', methods = ['GET', 'POST'])
+def generateStaticGiles():
+    return render_template("giles.html")
+
+@app.route('/loysch', methods = ['GET', 'POST'])
+def generateStaticLoysch():
+    return render_template("loysch.html")
+
+@app.route('/emersyn', methods = ['GET', 'POST'])
+def generateStaticEmersyn():
+    return render_template("emersyn.html")
+    
+@app.route('/posts', methods = ['GET', 'POST'])
+def generatePostsPage():
+    return render_template("member.html")
+    
+@app.route('/store', methods = ['GET', 'POST'])
+def generateStorePage():
+    return render_template("store.html")
+    
+@app.route('/mycart', methods = ['GET', 'POST'])
+def generateCartPage():
+    return render_template("cart.html")
+
 
 #Error Handlers
 @app.errorhandler(404)
