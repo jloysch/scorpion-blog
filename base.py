@@ -9,6 +9,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
+import sys
 
 app = Flask(__name__ , template_folder="templates", static_folder='res')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -135,12 +136,16 @@ def login():
 			if user:
 				if check_password_hash(user.passwordHash, form.password.data):
 					login_user(user)
+					print('Logging in', file=sys.stdout)
 					return redirect(url_for('dashboard'))
 				else:
+					print('Password wrong', file=sys.stdout)
 					flash("Wrong Password")
 			else:
+				print('Bad email', file=sys.stdout)
 				flash("Email not linked to an account")
 		else:
+			print('Bad mix', file=sys.stdout)
 			flash("Invalid information. Please try again.")
 
 	return render_template("login.html", form = form)
