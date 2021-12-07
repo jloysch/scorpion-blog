@@ -241,7 +241,8 @@ def generateStaticEmersyn():
     
 @app.route('/posts', methods = ['GET', 'POST'])
 def generatePostsPage():
-    return render_template("member.html")
+	posts = BlogPost.query.order_by(BlogPost.date)
+	return render_template("member.html", posts = posts)
     
 @app.route('/store', methods = ['GET', 'POST'])
 def generateStorePage():
