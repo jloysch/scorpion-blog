@@ -1,4 +1,3 @@
-
 from flask import Flask , render_template , json, redirect, url_for, request, flash
 from flask_wtf import FlaskForm
 from datetime import datetime
@@ -9,11 +8,17 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
+from flask_recaptcha import ReCaptcha
 import sys
 
-app = Flask(__name__ , template_folder="templates", static_folder='res')
+app = Flask(__name__ , template_folder="Templates", static_folder='res')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = "please feed us Sarah Mangelsdorf"
+app.config['RECAPTCHA_SITE_KEY'] = '6Le6an4dAAAAAGq2i0cGerF9vhPuH90KAUauDAc0'
+app.config['RECAPTCHA_SECRET_KEY'] = '6Le6an4dAAAAAPshXg_PB29nH3EmWg3sYoGN-zrj'
+
+recaptcha = ReCaptcha(app)
+
 db = SQLAlchemy(app)
 
 loginManager = LoginManager()
@@ -46,6 +51,7 @@ class Users(db.Model, UserMixin):
 
 	def __repr__(self):
 		return '<Name %r>' % self.name
+
 
 class SignUpForm(FlaskForm):
 	email = StringField("Email Address", validators=[DataRequired(), Email()])
@@ -90,47 +96,52 @@ class EmailListForm(FlaskForm):
 	lname = StringField("Last Name", validators=[DataRequired()])
 	email = StringField("Email Address", validators=[DataRequired(), Email()])
 	submit = SubmitField("Subscribe")
-	
-
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
 	name = None
 	form = SignUpForm()
+
 	if form.validate_on_submit():
-		#checks to make sure the user's email is not in the database, should return None if the email is unique
-		user = Users.query.filter_by(email = form.email.data).first()
-		if user is None: #if unique
+
+		if recaptcha.verify():
+			#checks to make sure the user's email is not in the database, should return None if the email is unique
+			user = Users.query.filter_by(email = form.email.data).first()
+
+			if user is None:
 			#line below is hashing the password with sha256 and returning the hash to the database
-			hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
-			user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
-			db.session.add(user)
-			db.session.commit()
-			return redirect(url_for('login'))
+				hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
+				user = Users(username = form.username.data, passwordHash = hashedPassword, name = form.name.data, email = form.email.data)
+				
+				db.session.add(user)
+				db.session.commit()
+				flash("Sign-Up Successful. Go to the Login In page to acces your account.")
+				return redirect(url_for('login'))
+			else:
+				flash("There is already a user with this email. Try again.")
+			name = form.name.data
+			form.name.data = ''
+			form.passwordHash.data = ''
+			form.email.data = ''
+			form.username.data = ''
 		else:
-			flash("There is already a user with this email. Try again.")
-		name = form.name.data
-		form.name.data = ''
-		form.passwordHash.data = ''
-		form.email.data = ''
-		form.username.data = ''
-		flash("Sign-Up Successful. Go to the Login In page to acces your account.")
+			flash("Please fill out the captcha and try again.")
+	else:
+		flash("!form.validate_..")
+
 	allUsers = Users.query.order_by(Users.dateOfRegistration)
 	return render_template("signup.html", name = name, form = form, allUsers = allUsers)
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
-
 	error = None
 	form = LoginForm()
-
 	flash("HEHE")
-	
-	if request.method == 'POST':
 
+	if request.method == 'POST':
 		if form.validate_on_submit():
 
-			#returns the first result of a user with the email entered (should be only one instance though), if user doesn't exist then returns nothing'
+		#returns the first result of a user with the email entered (should be only one instance though), if user doesn't exist then returns nothing'
 			user = Users.query.filter_by(email = form.email.data).first()
 
 			if user:
@@ -150,8 +161,6 @@ def login():
 
 	return render_template("login.html", form = form)
 
-
-
 @app.route('/dashboard', methods = ['GET', 'POST'])
 @login_required
 def dashboard():
@@ -162,6 +171,7 @@ def dashboard():
 def updateinfo(id):
 	form = UpdateForm()
 	user = Users.query.get_or_404(id)
+
 	if form.validate_on_submit():
 		user.name = request.form['name']
 		user.email = request.form['email']
@@ -171,33 +181,31 @@ def updateinfo(id):
 		return render_template("updateinfo.html", form = form, user = user)
 	else:
 		flash("Invalid Form. Please Try Again.")
-	return render_template("updateinfo.html", form = form, user = user)
+		return render_template("updateinfo.html", form = form, user = user)
 
 @app.route('/publish', methods = ['GET', 'POST'])
 @login_required
 def publish():
 	form = BlogPostForm()
 	if form.validate_on_submit():
-		blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
-		
-		form.postTitle.data = ''
-		form.name.data = ''
-		form.article.data = ''
-
-		db.session.add(blogPost)
-		db.session.commit()
-		flash("Your Post was Successfully Published")
-		return redirect(url_for('allposts'))
-
+		if recaptcha.verify():
+			blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
+			form.postTitle.data = ''
+			form.name.data = ''
+			form.article.data = ''
+			db.session.add(blogPost)
+			db.session.commit()
+			flash("Your Post was Successfully Published")
+			return redirect(url_for('allposts'))
+		else:
+			flash("Please fill out the captcha.")
 	else:
 		flash("Post not published, please try fill in all information.")
-
 	return render_template("createpostform.html", form = form)
 
 @app.route('/allposts')
 def allposts():
 	allPosts = BlogPost.query.order_by(BlogPost.date)
-
 	return render_template("allposts.html", allPosts = allPosts)
 
 @app.route('/userpost/<int:id>')
@@ -212,57 +220,54 @@ def aboutus():
 @app.route('/subscribe', methods = ['GET', 'POST'])
 def subscribe():
 	form = EmailListForm()
+
 	if form.validate_on_submit():
 		recipient = EmailList(fname = form.fname.data, lname = form.lname.data, email = form.email.data)
-
 		form.fname.data = ''
 		form.lname.data = ''
 		form.email.data = ''
-
 		db.session.add(recipient)
 		db.session.commit()
 		flash("Successfully Subscribed to Email List")
-
 	else:
 		flash("Information Invalid")
-
 	return render_template('subscribe.html', form = form)
+
 
 @app.route('/', methods = ['GET', 'POST'])
 def generateLandingPage():
-    return render_template("home.html")
-    
+	return render_template("home.html")
+
 @app.route('/giles', methods = ['GET', 'POST'])
 def generateStaticGiles():
-    return render_template("giles.html")
+	return render_template("giles.html")
 
 @app.route('/loysch', methods = ['GET', 'POST'])
 def generateStaticLoysch():
-    return render_template("loysch.html")
+	return render_template("loysch.html")
 
 @app.route('/emersyn', methods = ['GET', 'POST'])
 def generateStaticEmersyn():
-    return render_template("emersyn.html")
-    
+	return render_template("emersyn.html")
+
 @app.route('/posts', methods = ['GET', 'POST'])
 def generatePostsPage():
 	posts = BlogPost.query.order_by(BlogPost.date)
 	return render_template("member.html", posts = posts)
-    
+
 @app.route('/store', methods = ['GET', 'POST'])
 def generateStorePage():
-    return render_template("store.html")
-    
+	return render_template("store.html")
+
 @app.route('/mycart', methods = ['GET', 'POST'])
 def generateCartPage():
-    return render_template("cart.html")
-
+	return render_template("cart.html")
 
 #Error Handlers
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('error404.html'), 404
+	return render_template('error404.html'), 404
 
 @app.errorhandler(500)
 def page_not_found(e):
-    return render_template('error500.html'), 500
+	return render_template('error500.html'), 500
