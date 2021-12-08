@@ -1,10 +1,10 @@
-from flask import Flask, render_template , json, redirect, url_for, request, flash
+from flask import Flask, render_template , json, redirect, url_for, request, flash, session
 from flask_wtf import FlaskForm
 from datetime import datetime
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, ValidationError
 from wtforms.validators import EqualTo, DataRequired, Email, Length
 from wtforms.fields.html5 import DateField
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
@@ -99,6 +99,10 @@ class EmailListForm(FlaskForm):
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
+	
+	if current_user.is_authenticated:
+		return redirect(url_for('dashboard'))
+
 	name = None
 	form = SignUpForm()
 	if form.validate_on_submit():
@@ -129,8 +133,10 @@ def signup():
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
-
 	form = LoginForm()
+	if current_user.is_authenticated:
+		return redirect(url_for('dashboard'))
+	
 
 	if form.validate_on_submit():
 
@@ -148,6 +154,15 @@ def login():
 	else:
 		flash("Invalid information. Please try again.")
 	return render_template("login.html", form = form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    if session.get('was_once_logged_in'):
+        del session['was_once_logged_in']
+    flash('You have successfully logged yourself out.')
+    return redirect(url_for('login'))
 
 
 @app.route('/dashboard', methods = ['GET', 'POST'])
