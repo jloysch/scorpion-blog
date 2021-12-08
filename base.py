@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask_recaptcha import ReCaptcha
+from itsdangerous import URLSafeTimedSerializer
 import smtplib
 import os
 
@@ -23,6 +24,8 @@ db = SQLAlchemy(app)
 loginManager = LoginManager()
 loginManager.init_app(app)
 loginManager.login_view = 'login'
+
+ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 @loginManager.user_loader
 def load_user(user_id):
@@ -96,8 +99,19 @@ class EmailListForm(FlaskForm):
 	lname = StringField("Last Name", validators=[DataRequired()])
 	email = StringField("Email Address", validators=[DataRequired(), Email()])
 	submit = SubmitField("Subscribe")
-	
 
+class EmailForm(FlaskForm):
+	email = StringField("Email Address", validators=[DataRequired(), Email()])
+	submit = SubmitField("Submit")
+
+class PasswordResetForm(FlaskForm):
+	passwordHash = PasswordField("New Password", validators=[DataRequired(), EqualTo('passwordHashConfirm')])
+	passwordHashConfirm = PasswordField("Re-enter your New Password", validators=[DataRequired()])
+	submit = SubmitField("Submit")
+
+
+
+#here starts thee pages
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
@@ -306,6 +320,61 @@ def subscribe():
 		flash("Information Invalid")
 
 	return render_template('subscribe.html', form = form)
+
+@app.route('/reset', methods=["GET", "POST"])
+def resetpassword():
+	form = EmailForm()
+	if form.validate_on_submit():
+		user = Users.query.filter_by(email = form.email.data).first_or_404()
+
+		token = ts.dumps(user.email, salt='recover-key')
+		print(token)
+		recoveryURL = url_for('tokenreset', token = token)
+
+		message = recoveryURL
+		server = smtplib.SMTP("smtp.gmail.com", 587)
+		server.starttls()
+		server.login("scorpionblog.roc@gmail.com", os.getenv("EMAILPASS"))
+		server.sendmail("scorpionblog.roc@gmail.com", user.email, message)
+		form.email = ''
+
+		flash("Password Reset Link Sent")
+
+		return redirect(url_for('login'))
+
+	else: 
+
+		flash("Please enter your email.")
+
+	return render_template('reset.html', form = form)
+
+@app.route('/tokenreset/<token>', methods=["GET", "POST"])
+def tokenreset(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=86400)
+
+    except:
+
+        abort(404)
+
+    form = PasswordResetForm()
+
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email = email).first_or_404()
+
+        hashedPassword = generate_password_hash(form.passwordHash.data, "sha256")
+        user.passwordHash = hashedPassword
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('login'))
+
+    else: 
+        flash("Passwords do not match, please try again.")
+
+    return render_template('tokenreset.html', form=form, token=token)
+
 
 #Error Handlers
 @app.errorhandler(404)

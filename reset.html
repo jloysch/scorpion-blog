@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+
+<html>
+<body>
+	<h1>Enter your Email</h1>
+	<br/>
+	<form method="POST">
+		{{form.hidden_tag()}}
+
+		{{form.email.label}}
+		{{form.email()}}
+		<br/>
+		<br/>
+		{{form.submit}}
+	</form>
+</body>
+</html>

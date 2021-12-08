@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+
+<html>
+<body>
+	<h1>Enter a New Password</h1>
+	<br/>
+	<form method="POST">
+		{{form.hidden_tag()}}
+
+		{{form.passwordHash.label}}
+		{{form.passwordHash()}}
+		<br/>
+		{{form.passwordHashConfirm.label}}
+		{{form.passwordHashConfirm()}}
+		<br/>
+		<br/>
+		{{form.submit}}
+	</form>
+</body>
+</html>
