@@ -1,4 +1,4 @@
-from flask import Flask , render_template , json, redirect, url_for, request, flash
+from flask import Flask, render_template , json, redirect, url_for, request, flash
 from flask_wtf import FlaskForm
 from datetime import datetime
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, ValidationError
@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask_recaptcha import ReCaptcha
+import smtplib
+import os
 
 app = Flask(__name__ , template_folder="Templates")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -221,6 +223,12 @@ def subscribe():
 
 		db.session.add(recipient)
 		db.session.commit()
+		message = "You have successfully subscribed to the Scorpion email list."
+		server = smtplib.SMTP("smtp.gmail.com", 587)
+		server.starttls()
+		server.login("scorpionblog.roc@gmail.com", os.getenv("EMAILPASS"))
+		server.sendmail("scorpionblog.roc@gmail.com", recipient.email, message)
+
 		flash("Successfully Subscribed to Email List")
 
 	else:
