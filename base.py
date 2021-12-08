@@ -36,6 +36,7 @@ class Users(db.Model, UserMixin):
 	email = db.Column(db.String(80), nullable = False, unique = True)
 	dateOfRegistration = db.Column(db.DateTime, default = datetime.utcnow)
 	passwordHash = db.Column(db.String(128))
+	articles = db.relationship('BlogPost', backref = 'author')
 
 	@property
 	def password(self):
@@ -76,6 +77,7 @@ class BlogPost(db.Model):
 	article = db.Column(db.Text)
 	name = db.Column(db.String(80))
 	date = db.Column(db.DateTime, default = datetime.utcnow)
+	userID = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 class BlogPostForm(FlaskForm):
 	postTitle = StringField("Title", validators = [DataRequired()])
@@ -192,7 +194,8 @@ def publish():
 	form = BlogPostForm()
 	if form.validate_on_submit():
 		if recaptcha.verify():
-			blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data)
+			author = current_user.id
+			blogPost = BlogPost(postTitle = form.postTitle.data, name = form.name.data, article = form.article.data, userID = author)
 		
 			form.postTitle.data = ''
 			form.name.data = ''
@@ -221,6 +224,59 @@ def allposts():
 def userpost(id):
 	blogPost = BlogPost.query.get_or_404(id)
 	return render_template('userpost.html', blogPost = blogPost)
+
+@app.route('/userpost/edit/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def edit(id):
+	blogPost = BlogPost.query.get_or_404(id)
+	form = BlogPostForm()
+
+
+	if form.validate_on_submit():
+		blogPost.postTitle = form.postTitle.data
+		blogPost.name = form.name.data
+		blogPost.article = form.article.data
+		db.session.add(blogPost)
+		db.session.commit()
+
+		return redirect(url_for('userpost', id = blogPost.id))
+
+	if current_user.id == blogPost.userID:
+
+		form.postTitle.data = blogPost.postTitle
+		form.name.data = blogPost.name
+		form.article.data = blogPost.article
+
+		return render_template("createpostform.html", form = form)
+
+	else:
+		
+		flash("You cannot edit this post.")
+
+		return redirect(url_for('allposts'))
+
+@app.route('/userpost/delete/<int:id>')
+@login_required
+def delete(id):
+	blogPost = BlogPost.query.get_or_404(id)
+
+	userID = current_user.id
+
+	if userID == blogPost.userID:
+
+		db.session.delete(blogPost)
+		db.session.commit()
+
+		flash("Post Deleted")
+
+		return redirect(url_for('allposts'))
+
+	else:
+		
+		flash("Cannot delete other user's posts.")
+
+	return redirect(url_for('allposts'))
+	
 
 @app.route('/aboutus')
 def aboutus():
