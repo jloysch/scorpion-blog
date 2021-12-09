@@ -149,13 +149,13 @@ def signup():
 		flash("!form.validate_..")
 
 	allUsers = Users.query.order_by(Users.dateOfRegistration)
-	return render_template("signup.html", name = name, form = form, allUsers = allUsers)
+	return render_template("signup.html", name = name, form = form, allUsers = allUsers, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
 	error = None
 	form = LoginForm()
-	flash("HEHE")
+	#flash("HEHE")
 
 	if request.method == 'POST':
 		if form.validate_on_submit():
@@ -178,12 +178,15 @@ def login():
 			print('Bad mix', file=sys.stdout)
 			flash("Invalid information. Please try again.")
 
-	return render_template("login.html", form = form)
+	if current_user.is_authenticated:
+		return redirect(url_for("dashboard"))
+	else:
+		return render_template("login.html", form = form, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/dashboard', methods = ['GET', 'POST'])
 @login_required
 def dashboard():
-	return render_template("dashboard.html")
+	return render_template("dashboard.html", signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/updateinfo/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -197,10 +200,10 @@ def updateinfo(id):
 		user.username = request.form['username']
 		db.session.commit()
 		flash("User Updated Successfully")
-		return render_template("updateinfo.html", form = form, user = user)
+		return render_template("updateinfo.html", form = form, user = user, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 	else:
 		flash("Invalid Form. Please Try Again.")
-		return render_template("updateinfo.html", form = form, user = user)
+		return render_template("updateinfo.html", form = form, user = user, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/publish', methods = ['GET', 'POST'])
 @login_required
@@ -220,17 +223,17 @@ def publish():
 			flash("Please fill out the captcha.")
 	else:
 		flash("Post not published, please try fill in all information.")
-	return render_template("createpostform.html", form = form)
+	return render_template("createpostform.html", form = form, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/allposts')
 def allposts():
 	allPosts = BlogPost.query.order_by(BlogPost.date)
-	return render_template("allposts.html", allPosts = allPosts)
+	return render_template("allposts.html", allPosts = allPosts, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/userpost/<int:id>')
 def userpost(id):
 	blogPost = BlogPost.query.get_or_404(id)
-	return render_template('userpost.html', blogPost = blogPost)
+	return render_template('userpost.html', blogPost = blogPost, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/aboutus')
 def aboutus():
@@ -250,29 +253,29 @@ def subscribe():
 		flash("Successfully Subscribed to Email List")
 	else:
 		flash("Information Invalid")
-	return render_template('subscribe.html', form = form)
+	return render_template('subscribe.html', form = form, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 
 @app.route('/', methods = ['GET', 'POST'])
 def generateLandingPage():
-	return render_template("home.html")
+	return render_template("home.html", signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/giles', methods = ['GET', 'POST'])
 def generateStaticGiles():
-	return render_template("giles.html")
+	return render_template("giles.html", signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/loysch', methods = ['GET', 'POST'])
 def generateStaticLoysch():
-	return render_template("loysch.html")
+	return render_template("loysch.html", signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/emersyn', methods = ['GET', 'POST'])
 def generateStaticEmersyn():
-	return render_template("emersyn.html")
+	return render_template("emersyn.html", signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 @app.route('/posts', methods = ['GET', 'POST'])
 def generatePostsPage():
 	posts = BlogPost.query.order_by(BlogPost.date)
-	return render_template("member.html", posts = posts)
+	return render_template("member.html", posts = posts, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 '''
 @app.route('/store', methods = ['GET', 'POST'])
@@ -362,7 +365,7 @@ def generateStorePage():
 
 
 	items = StoreMerch.query.order_by(StoreMerch.id)
-	return render_template("store.html", items = items)
+	return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 '''
 
@@ -503,13 +506,13 @@ def generateCartPage():
 
 		db.session.commit()
 
-		return render_template('cart.html', displayItems = cartDisplayItems)
+		return render_template('cart.html', displayItems = cartDisplayItems, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 
 			
 
 	if cart is not None:
-		return render_template("cart.html", displayItems=displayItems)
+		return render_template("cart.html", displayItems=displayItems, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 	else:
 		flash("Your cart is empty! Please add some items.", 'store')
 		return redirect(url_for('generateStorePage'))

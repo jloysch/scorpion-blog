@@ -28,16 +28,18 @@
 
 <body>
 
-  <div class="navbar">
-    <a href="Home.html">Home</a> 
-    <a href="Giles.html">Genius Giles</a> 
-    <a href="Josh.html">Jinormous Josh</a> 
-    <a href="Emersyn.html">E-Girl Emersyn</a>
-    <a href="Member.html">Member Posts</a>
-    <a href="Store.html">Store</a>
-    <a href="Cart.html">Cart</a>
-    <a href="Login.html">Login/Sign-Up</a>
+
+ <div class="navbar">
+    <a href="{{ url_for('generateLandingPage') }}">Home</a> 
+    <a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+    <a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+    <a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+    <a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+    <a href="{{ url_for('generateStorePage') }}">Store</a>
+    <a href="{{ url_for('generateCartPage') }}">Cart</a>
+    <a href="{{ url_for('login') }}">{{signupHeader}}</a>
   </div>
+
 
 
 </body>
