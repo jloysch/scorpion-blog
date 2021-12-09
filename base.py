@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask_recaptcha import ReCaptcha
+from decimal import Decimal
 import sys
 
 app = Flask(__name__ , template_folder="Templates", static_folder='res')
@@ -78,6 +79,24 @@ class BlogPost(db.Model):
 	article = db.Column(db.Text)
 	name = db.Column(db.String(80))
 	date = db.Column(db.DateTime, default = datetime.utcnow)
+
+class StoreMerch(db.Model):
+	id = db.Column(db.Integer, primary_key = True)
+	name = db.Column(db.String(300))
+	cost = db.Column(db.Numeric(3,2))
+
+class Cart(db.Model):
+	uid = db.Column(db.Integer, primary_key = True)
+	items = db.Column(db.String(300))
+	quantities = db.Column(db.String(300))
+	sizes = db.Column(db.String(300))
+
+class CartItem():
+	itemId = -1
+	itemName = "shirt"
+	quantity = -1
+	size = -1
+	cost = 0.00
 
 class BlogPostForm(FlaskForm):
 	postTitle = StringField("Title", validators = [DataRequired()])
@@ -255,13 +274,247 @@ def generatePostsPage():
 	posts = BlogPost.query.order_by(BlogPost.date)
 	return render_template("member.html", posts = posts)
 
+'''
 @app.route('/store', methods = ['GET', 'POST'])
 def generateStorePage():
 	return render_template("store.html")
+'''
+
+
+def wrapDelimitedStr(strArray, delim):
+	t = ""
+	for n in strArray:
+		t+=n
+		t+=delim
+	return t
+
+def out(str):
+	print(str, file=sys.stdout)
+	
+@app.route('/store', methods = ['GET', 'POST'])
+def generateStorePage():
+
+	if request.method == 'POST':
+		#Add to the database 
+		print('POSTED!', file=sys.stdout)
+		#flash("OK")
+		#return render_tempalte("home.html")
+
+		#checks to make sure the user's email is not in the database, should return None if the email is unique
+		print(current_user.id, file=sys.stdout)
+
+		cart = Cart.query.filter_by(uid=current_user.id).first()
+
+		if cart is not None:
+
+			#trim extra comma
+			
+			newItems = cart.items.split(',')
+			newItems = newItems[0:len(newItems)-1]
+			newQuantities = cart.quantities.split(',')
+			newQuantities = newQuantities[0:len(newQuantities)-1]
+			sizes = cart.sizes.split(',')
+			sizes = sizes[0:len(sizes)-1]
+
+			newItems.append(request.values.get('merchId').strip("}"))
+			newQuantities.append(request.form.get('quantity'))
+			sizes.append(request.form.get('size'))
+
+			#print("\n\n\n\n", file=sys.stdout)
+			#print(request.form.get('quantity'), file=sys.stdout)
+			#print("\n\n\n\n", file=sys.stdout)
+
+			cart.items = wrapDelimitedStr(newItems, ',')
+			cart.quantities = wrapDelimitedStr(newQuantities, ',')
+			cart.sizes = wrapDelimitedStr(sizes, ',')
+			#out("")
+			#out("")
+			#out(request.values.get('merchId'))
+			#out(request.values.get('quantity'))
+			#out(request.values.get('size'))
+			#out("")
+			#out("")
+
+			#out(request.values)
+			#db.sesion.update()
+
+		else:
+
+			na = request.values.get('merchId').strip("}")
+			nb = request.form.get('quantity')
+			nc = request.form.get('size')
+			na += ','
+			nb += ','
+			nc += ','
+
+			cart = Cart(uid = current_user.id, items=na, quantities=nb, sizes=nc)
+
+			db.session.add(cart)
+		
+		db.session.commit()
+
+
+		#db.session.add(cart)
+		#db.session.commit()
+		#flash("Sign-Up Successful. Go to the Login In page to acces your account.")
+		#return redirect(url_for('generateCartPage'))
+				
+
+
+	items = StoreMerch.query.order_by(StoreMerch.id)
+	return render_template("store.html", items = items)
+
+'''
+
+class Cart(db.Model):
+	uid = db.Column(db.Integer, primary_key = True)
+	items = db.Column(db.String(300))
+	quantities = db.Column(db.String(300))
+	sizes = db.Column(db.String(300))
+
+class CartItem():
+	itemId = -1
+	quantity = -1
+	size = -1
+
+
+'''
 
 @app.route('/mycart', methods = ['GET', 'POST'])
 def generateCartPage():
-	return render_template("cart.html")
+
+	cart = Cart.query.filter_by(uid=current_user.id).first()
+
+	displayItems = []
+
+	#pretrim extra delimiter
+
+	if cart is not None:
+
+		#out(cart.items)
+		#out(cart.quantities)
+
+		#trim extra comma
+		items = cart.items.split(',')
+		items = items[0:len(items)-1]
+		quantities = cart.quantities.split(',')
+		quantities=quantities[0:len(quantities)-1]
+		sizes = cart.sizes.split(',')
+		sizes = sizes[0:len(sizes)-1]
+
+		#[x,o,o]
+		#[x,o,o]
+		#[x,o,o]
+
+		if len(items) > 0:
+
+			for i in range(len(items)):
+
+				ct = CartItem()
+
+				if items[i] is not None:
+
+					queriedMerch = StoreMerch.query.filter_by(id=items[i]).first()
+
+					ct.itemId = items[i]
+					ct.quantity = quantities[i]
+					ct.size = sizes[i]
+					#ct.cost = float(str(float(StoreMerch.query.filter_by(id=items[i]).first().cost) * float(quantities[i])).format())
+					
+					#out("")
+					#out("-->\n\n")
+					#out(items[i])
+					#out("\n")
+					#out((StoreMerch.query.filter_by(id=items[i]).first()))
+					#out("<--\n\n")
+
+					ct.cost = queriedMerch.cost * Decimal(quantities[i])
+
+					ct.itemName = queriedMerch.name
+
+					displayItems.append(ct)
+
+
+	if request.method == 'POST':
+		out('Request from -->')
+		out(request.form.get('itemIdentifier'))
+		out("\n---")
+
+		#userRemoveItemFromCart(request.form.get('itemIdentifier'))
+
+		itemId = request.form.get('itemIdentifier')
+
+		cart = Cart.query.filter_by(uid=current_user.id).first()
+
+		#trim extra comma
+		items = cart.items.split(',')
+		items = items[0:len(items)-1]
+		quantities = cart.quantities.split(',')
+		quantities=quantities[0:len(quantities)-1]
+		sizes = cart.sizes.split(',')
+		sizes = sizes[0:len(sizes)-1]
+
+		newItems = []
+		newQuantities = []
+		newSizes = []
+
+		cartDisplayItems = []
+
+		for i in range(len(items)):
+
+			
+			if itemId != (str(items[i]+""+quantities[(i)]+""+sizes[(i)])):
+
+				out(items[int(i)])
+				out("^\n")
+				queriedMerch = StoreMerch.query.filter_by(id=items[int(i)]).first()
+
+				ct = CartItem()
+
+				newItems.append(items[i])
+				newQuantities.append(quantities[(i)])
+				newSizes.append(sizes[(i)])
+
+				ct.itemId = items[i]
+				ct.quantity = quantities[(i)]
+				ct.size = sizes[(i)]
+
+				ct.cost = queriedMerch.cost * Decimal(quantities[(i)])
+
+				ct.itemName = queriedMerch.name
+
+				cartDisplayItems.append(ct)
+
+
+		if (len(newItems) == 0):
+			Cart.query.filter(Cart.uid == current_user.id).delete()
+			db.session.commit()
+			out("OKAY ALL DELETED!")
+			return redirect(url_for('generateStorePage'))
+
+
+		a = wrapDelimitedStr(newItems, ',')
+		b = wrapDelimitedStr(newQuantities, ',')
+		c = wrapDelimitedStr(newSizes, ',')
+
+		cart.items = a
+		cart.quantities = b
+		cart.sizes = c
+
+		db.session.commit()
+
+		return render_template('cart.html', displayItems = cartDisplayItems)
+
+
+			
+
+	if cart is not None:
+		return render_template("cart.html", displayItems=displayItems)
+	else:
+		flash("Your cart is empty! Please add some items.", 'store')
+		return redirect(url_for('generateStorePage'))
+
+
 
 #Error Handlers
 @app.errorhandler(404)
