@@ -299,14 +299,21 @@ def generateStorePage():
 
 	if request.method == 'POST':
 		#Add to the database 
-		print('POSTED!', file=sys.stdout)
+		#print('POSTED!', file=sys.stdout)
 		#flash("OK")
 		#return render_tempalte("home.html")
 
 		#checks to make sure the user's email is not in the database, should return None if the email is unique
-		print(current_user.id, file=sys.stdout)
+		#print(current_user.id, file=sys.stdout)
 
 		cart = Cart.query.filter_by(uid=current_user.id).first()
+
+		items = StoreMerch.query.order_by(StoreMerch.id)
+
+		out(request.form.get('quantity'))
+		out(request.form.get('size'))
+
+		
 
 		if cart is not None:
 
@@ -350,11 +357,26 @@ def generateStorePage():
 			nb += ','
 			nc += ','
 
+			
+			if request.form.get('size') == "0":
+				out("ZERO SIZE")
+				flash("Please enter a size!", 'store')
+				return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
+
+			if request.form.get('quantity') == "0":
+				out("ZERO QUANTITY")
+				flash("Please enter a quantity!", 'store')
+				return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
+
+			
+
+
 			cart = Cart(uid = current_user.id, items=na, quantities=nb, sizes=nc)
 
 			db.session.add(cart)
+			
 		
-		db.session.commit()
+
 
 
 		#db.session.add(cart)
@@ -365,6 +387,23 @@ def generateStorePage():
 
 
 	items = StoreMerch.query.order_by(StoreMerch.id)
+
+	if request.form.get('size') == "0":
+		out("ZERO SIZE")
+		flash("Please enter a size!", 'store')
+		return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
+		
+	if request.form.get('quantity') == "0":
+		out("ZERO QUANTITY")
+		flash("Please enter a quantity!", 'store')
+		return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
+
+	
+
+
+
+	db.session.commit()
+
 	return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
 
 '''
