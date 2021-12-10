@@ -397,7 +397,7 @@ def generateStorePage():
 				
 
 
-	#items = StoreMerch.query.order_by(StoreMerch.id)
+	items = StoreMerch.query.order_by(StoreMerch.id)
 
 	if request.form.get('size') == "0":
 		out("ZERO SIZE")
