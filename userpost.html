@@ -1,24 +1,58 @@
-﻿<!DOCTYPE html>
-
-<html>
-<body>
-
-		<h2>{{blogPost.postTitle}}</h2>
-		<br/>
-		{{blogPost.date}}
-		<br/>
-		{{blogPost.name}}
-		<br/>
-		{{blogPost.article}}
-		{% if blogPost.userID == current_user.id %}
-		<br/>
-		<p><a href="{{ url_for('edit', id = blogPost.id) }}"> Edit</a></p>
-		<p><a href="{{ url_for('delete', id = blogPost.id) }}"> Delete</a></p>
-		{% endif %}
-		<br/>
-		<br/>
-
-		<button type="button"><a href="{{ url_for('allposts') }}">Back to All Posts</a></button>
-
-</body>
-</html>
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+	<link rel="stylesheet" href="../res/styles/ProjectCSS.css">
+	<script type="text/javascript" src="../res/js/ProjectJS.js">
+	</script>
+</head>
+
+<div>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+	<h1>Big Brain Blog</h1>
+	<h3>by Scorpion</h3>
+</div>
+
+
+<body>
+
+	<div class="navbar">
+		<a href="{{ url_for('generateLandingPage') }}">Home</a> 
+		<a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+		<a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+		<a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+		<a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+		<a href="{{ url_for('generateStorePage') }}">Store</a>
+		<a href="{{ url_for('generateCartPage') }}">Cart</a>
+		<a href="{{ url_for('login') }}">Login/Sign-Up</a>
+	</div>
+
+	<body>
+
+		<h2>{{blogPost.postTitle}}</h2>
+		<p2><b>Date: </b>{{blogPost.date}}</p2>
+		<br/>
+		<p2><b>Name: </b>{{blogPost.name}}</p2>
+		<br/>
+		<p2><b>Post: </b>{{blogPost.article}}</p2>
+
+		<br>
+		<br>
+		<button type="button"><a href="{{ url_for('allposts') }}">Back to All Posts</a></button>
+
+	</body>
+	</html>

@@ -1,16 +1,54 @@
-<!DOCTYPE html>
-
-<html>
-<body>
-	<h1>Your Dashboard</h1>
-	<br/>
-	<p>Name: {{current_user.name}}</p>
-	<p>Email: {{current_user.email}}</p>
-	<p>Username: {{current_user.username}}</p>
-	<br/>
-	<br/>
-	<p><a href = {{url_for('updateinfo', id = current_user.id)}}>Update Information</a></p>
-	<br/>
-	<p><a href = {{url_for('logout')}}>Log Out</a></p>
-</body>
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <link rel="stylesheet" href="../res/styles/ProjectCSS.css">
+  <script type="text/javascript" src="../res/js/ProjectJS.js">
+  </script>
+</head>
+
+<div>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+  <h1>Big Brain Blog</h1>
+  <h3>by Scorpion</h3>
+</div>
+
+
+<body>
+
+   <div class="navbar">
+    <a href="{{ url_for('generateLandingPage') }}">Home</a> 
+    <a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+    <a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+    <a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+    <a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+    <a href="{{ url_for('generateStorePage') }}">Store</a>
+    <a href="{{ url_for('generateCartPage') }}">Cart</a>
+    <a href="{{ url_for('login') }}">Login/Sign-Up</a>
+  </div>
+
+<body>
+	<h1 style="padding-left: 0px;"><center>User Dashboard</center></h1>
+	<br/>
+	<h4>Name: </h4> <p2>{{current_user.name}}</p2>
+	<h4>Email: </h4> <p2>{{current_user.email}}</h2>
+	<h4>Username: </h4> <p2>{{current_user.username}}</h2>
+	<br/>
+	<br/>
+	<p><button><a href = {{url_for('updateinfo', id = current_user.id)}}>Update Information</a></button></p>
+</body>
 </html>

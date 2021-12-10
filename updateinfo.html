@@ -1,23 +1,63 @@
-<!DOCTYPE html>
-
-<html>
-<body>
-	<h1>Sign Up</h1>
-	<br/>
-	<form method="POST">
-		{{form.hidden_tag()}}
-
-		{{form.name.label}}
-		{{form.name(value = user.name)}}
-		<br/>
-		{{form.email.label}}
-		{{form.email(value = user.email)}}
-		<br/>
-		{{form.username.label}}
-		{{form.username(value = user.username)}}
-		<br/>
-		<br/>
-		{{form.submit}}
-	</form>
-</body>
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <link rel="stylesheet" href="../res/styles/ProjectCSS.css">
+  <script type="text/javascript" src="../res/js/ProjectJS.js">
+  </script>
+</head>
+
+<div>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+  <h1>Big Brain Blog</h1>
+  <h3>by Scorpion</h3>
+</div>
+
+
+<body>
+
+   <div class="navbar">
+    <a href="{{ url_for('generateLandingPage') }}">Home</a> 
+    <a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+    <a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+    <a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+    <a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+    <a href="{{ url_for('generateStorePage') }}">Store</a>
+    <a href="{{ url_for('generateCartPage') }}">Cart</a>
+    <a href="{{ url_for('login') }}">Login/Sign-Up</a>
+  </div>
+
+<body>
+	<h1>Update Information</h1>
+	<br/>
+	<form method="POST">
+		{{form.hidden_tag()}}
+
+		<h2 style="padding: 0px">{{form.name.label}}</h2>
+		<h2 style="padding: 0px">{{form.name(value = user.name)}}</h2>
+		<br/>
+		<h2 style="padding: 0px">{{form.email.label}}</h2>
+		<h2 style="padding: 0px">{{form.email(value = user.email)}}</h2>
+		<br/>
+		<h2 style="padding: 0px">{{form.username.label}}</h2>
+		<h2 style="padding: 0px">{{form.username(value = user.username)}}</h2>
+		<br/>
+		<br/>
+		{{form.submit}}
+	</form>
+</body>
 </html>

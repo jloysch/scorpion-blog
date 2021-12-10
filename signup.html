@@ -1,32 +1,68 @@
-﻿<!DOCTYPE html>
-
-<html>
-<body>
-	<h1>Sign Up</h1>
-	<br/>
-	<form method="POST">
-		{{form.hidden_tag()}}
-
-		{{form.name.label}}
-		{{form.name()}}
-		<br/>
-		{{form.email.label}}
-		{{form.email()}}
-		<br/>
-		{{form.username.label}}
-		{{form.username()}}
-		<br/>
-		{{form.passwordHash.label}}
-		{{form.passwordHash()}}
-		<br/>
-		{{form.passwordHashConfirm.label}}
-		{{form.passwordHashConfirm()}}
-		<br/>
-		<br/>
-		{{ recaptcha }}
-		<br/>
-		<br/>
-		{{form.submit}}
-	</form>
-</body>
-</html>
+﻿<!DOCTYPE html>
+
+<html>
+
+<head>
+  <link rel="stylesheet" href="../res/styles/ProjectCSS.css">
+  <script type="text/javascript" src="../res/js/ProjectJS.js">
+  </script>
+</head>
+
+<div>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="../res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+  <h1>Big Brain Blog</h1>
+  <h3>by Scorpion</h3>
+</div>
+
+
+<body>
+
+   <div class="navbar">
+    <a href="{{ url_for('generateLandingPage') }}">Home</a> 
+    <a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+    <a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+    <a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+    <a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+    <a href="{{ url_for('generateStorePage') }}">Store</a>
+    <a href="{{ url_for('generateCartPage') }}">Cart</a>
+    <a href="{{ url_for('login') }}">Login/Sign-Up</a>
+  </div>
+
+<body>
+	<h1>Sign Up</h1>
+	<br/>
+	<form method="POST">
+		{{form.hidden_tag()}}
+
+		<h5 style>{{form.name.label}}</h5>
+		<h5>{{form.name()}}</h5>
+		<h5>{{form.email.label}}</h5>
+		<h5>{{form.email()}}</h5>
+		<h5>{{form.username.label}}</h5>
+		<h5>{{form.username()}}</h5>
+		<h5>{{form.passwordHash.label}}</h5>
+		<h5>{{form.passwordHash()}}</h5>
+		<h5>{{form.passwordHashConfirm.label}}</h5>
+		<h5>{{form.passwordHashConfirm()}}</h5>
+		<br/>
+		{{ recaptcha }}
+		<br/>
+		{{form.submit}}
+	</form>
+</body>
+</html>
+© 2021 GitHub, Inc.
+Terms

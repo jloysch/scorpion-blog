@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+  <link rel="stylesheet" href="/res/styles/ProjectCSS.css">
+  <script type="text/javascript" src="/res/js/ProjectJS.js">
+  </script>
+</head>
+
+<div>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: left; padding-right: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+<img src="/res/img/branding/scorpionSC.jpg" alt="logo" style="width:80px;height:80px; float: right; padding-left: 5px";>
+  <h1>Big Brain Blog</h1>
+  <h3>by Scorpion</h3>
+</div>
+
+
+
+{% with errors = get_flashed_messages(category_filter=["store"]) %}
+{% if errors %}
+<div class="alert-message block-message error">
+  <a class="close" href="#">×</a>
+  <ul>
+    {%- for msg in errors %}
+    <li>{{ msg }}</li>
+    {% endfor -%}
+  </ul>
+</div>
+{% endif %}
+{% endwith %}
+
+<body>
+
+  <div class="navbar">
+    <a href="{{ url_for('generateLandingPage') }}">Home</a> 
+    <a href="{{ url_for('generateStaticGiles') }}">Genius Giles</a> 
+    <a href="{{ url_for('generateStaticLoysch') }}">Jinormous Josh</a> 
+    <a href="{{ url_for('generateStaticEmersyn') }}">E-Girl Emersyn</a>
+    <a href="{{ url_for('generatePostsPage') }}">Member Posts</a>
+    <a href="{{ url_for('generateStorePage') }}">Store</a>
+    <a href="{{ url_for('generateCartPage') }}">Cart</a>
+    <a href="{{ url_for('login') }}">Login/Sign-Up</a>
+  </div>
+
+<!--
+  <div class="row">
+    <div class="column">
+      <img src="../res/img/merchandise/MensTshirt.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <div>
+        <center>
+
+        <h4><center>Men's <br> T-shirt</center></h4>
+
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+
+      </div>
+    </div>
+    <div class="column">
+      <img src="../res/img/merchandise/WomensTshirt.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <h4><center>Womens's <br> T-shirt</center></h4>
+        <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+    </div>
+    <div class="column">
+      <img src="../res/img/merchandise/LongSleeveTshirt.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <h4><center>Long Sleeve <br> T-shirt</center></h4>
+        <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+  <div class="row">
+    <div class="column">
+      <img src="../res/img/merchandise/Hoodie.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <h4><center>Hoodie</center></h4>
+        <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+    </div>
+
+    <div class="column">
+      <img src="../res/img/merchandise/Polo.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <h4><center>Polo</center></h4>
+        <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+    </div>
+
+    <div class="column">
+      <img src="../res/img/merchandise/Cutoff.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+      <h4><center>Cutoff</center></h4>
+        <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Size</option>
+            <option value="1">Small</option>
+            <option value="2">Medium</option>
+            <option value="3">Large</option>
+            <option value="4">Extra Large</option>
+          </select>
+
+          <br>
+          <br>
+          <select style="height: 25px; width: 200px; background-color: red; color: black;">
+            <option value="0">Select Quanitity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+          <br>
+          <br>
+          <button style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+            <b>Add To Cart</b>
+          </button>
+
+        </center>
+    </div>
+  </div>
+
+../res/img/branding/scorpionSC.jpg
+
+
+!-->
+
+
+{% for item in items %}
+<form action="" method="post">
+<center>
+  <div class="column">
+    <img src="/res/img/merch/{{item.id}}.jpg" alt="Giles" style="width:300px;height:400px; float: left; padding-left: 5px";>
+    <h4><center>{{item.name}} (${{item.cost}})</center></h4>
+
+      <select id="size" name="size" style="height: 25px; width: 200px; background-color: red; color: black;">
+          <option value="0">Select Size</option>
+          <option value="1">Small</option>
+          <option value="2">Medium</option>
+          <option value="3">Large</option>
+          <option value="4">Extra Large</option>
+        </select>
+
+        <br>
+        <br>
+
+        <select id="quantity" name="quantity" style="height: 25px; width: 200px; background-color: red; color: black;">
+          <option value="0">Select Quanitity</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+
+        <br>
+        <br>
+
+        <input type="hidden" id="merchId" name="merchId" value="{{item.id}}}">
+
+        <button type="submit" style="height: 40px; width: 100px; background-color: red; color: black; border-color: black;">
+
+
+          <b>Add To Cart</b>
+
+        </button>
+
+      
+  </div>
+</center>
+</form>
+{% endfor %}
+
+</body>
+</html>
