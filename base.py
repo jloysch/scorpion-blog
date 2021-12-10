@@ -1,30 +1,37 @@
-from flask import Flask , render_template , json, redirect, url_for, request, flash
+from flask import Flask, render_template , json, redirect, url_for, request, flash, session
 from flask_wtf import FlaskForm
 from datetime import datetime
 from wtforms import BooleanField, PasswordField, StringField, SubmitField, ValidationError
 from wtforms.validators import EqualTo, DataRequired, Email, Length
-from wtforms.fields.html5 import DateField
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
+from wtforms import DateField
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user, logout_user
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from wtforms.widgets import TextArea
 from flask_recaptcha import ReCaptcha
+from itsdangerous import URLSafeTimedSerializer
 from decimal import Decimal
+import smtplib
+import os
 import sys
+
 
 app = Flask(__name__ , template_folder="Templates", static_folder='res')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = "please feed us Sarah Mangelsdorf"
 app.config['RECAPTCHA_SITE_KEY'] = '6Le6an4dAAAAAGq2i0cGerF9vhPuH90KAUauDAc0'
 app.config['RECAPTCHA_SECRET_KEY'] = '6Le6an4dAAAAAPshXg_PB29nH3EmWg3sYoGN-zrj'
-
 recaptcha = ReCaptcha(app)
-
 db = SQLAlchemy(app)
+
+
 
 loginManager = LoginManager()
 loginManager.init_app(app)
 loginManager.login_view = 'login'
+
+ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+
 
 @loginManager.user_loader
 def load_user(user_id):
@@ -306,9 +313,15 @@ def generateStorePage():
 		#checks to make sure the user's email is not in the database, should return None if the email is unique
 		#print(current_user.id, file=sys.stdout)
 
+		items = StoreMerch.query.order_by(StoreMerch.id)
+
+		if not current_user.is_authenticated:
+			flash("Please log in to save your cart!", 'store')
+			return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
+
 		cart = Cart.query.filter_by(uid=current_user.id).first()
 
-		items = StoreMerch.query.order_by(StoreMerch.id)
+		
 
 		out(request.form.get('quantity'))
 		out(request.form.get('size'))
@@ -377,8 +390,6 @@ def generateStorePage():
 			
 		
 
-
-
 		#db.session.add(cart)
 		#db.session.commit()
 		#flash("Sign-Up Successful. Go to the Login In page to acces your account.")
@@ -386,21 +397,17 @@ def generateStorePage():
 				
 
 
-	items = StoreMerch.query.order_by(StoreMerch.id)
+	#items = StoreMerch.query.order_by(StoreMerch.id)
 
 	if request.form.get('size') == "0":
 		out("ZERO SIZE")
 		flash("Please enter a size!", 'store')
 		return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
-		
+
 	if request.form.get('quantity') == "0":
 		out("ZERO QUANTITY")
 		flash("Please enter a quantity!", 'store')
 		return render_template("store.html", items = items, signupHeader=("Dashboard" if current_user.is_authenticated else "Login/Sign-Up"))
-
-	
-
-
 
 	db.session.commit()
 
